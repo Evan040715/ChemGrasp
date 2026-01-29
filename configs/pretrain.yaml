@@ -4,18 +4,11 @@ defaults:
   - dataset: pretrain_dataset.yaml
   - _self_
 
-name: 'pretrain_3robots'
+name: 'pretrain_shadowhand'
 
 seed: 42
 gpu:
   - 0
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  - 7
 
 load_from_checkpoint: False
 log_every_n_steps: 5

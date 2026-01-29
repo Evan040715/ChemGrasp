@@ -31,7 +31,11 @@ class HandModel:
         self.meshes_path = meshes_path
         self.device = device
 
-        self.pk_chain = pk.build_chain_from_urdf(open(urdf_path).read()).to(dtype=torch.float32, device=device)
+        # URDFs may contain non-ASCII characters (e.g., © in ShadowHand URDF header).
+        # Some environments default to ASCII decoding, so always read as UTF-8 explicitly.
+        with open(urdf_path, "r", encoding="utf-8") as f:
+            urdf_text = f.read()
+        self.pk_chain = pk.build_chain_from_urdf(urdf_text).to(dtype=torch.float32, device=device)
         self.dof = len(self.pk_chain.get_joint_parameter_names())
         if os.path.exists(links_pc_path):  # In case of generating robot links pc, the file doesn't exist.
             links_pc_data = torch.load(links_pc_path, map_location=device)

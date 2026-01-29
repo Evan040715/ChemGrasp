@@ -1,6 +1,6 @@
 robot_names:
-  - 'barrett'
-  - 'allegro'
+  # - 'barrett'
+  # - 'allegro'
   - 'shadowhand'
 
 debug_object_names: null  # use part of the dataset, for debug only

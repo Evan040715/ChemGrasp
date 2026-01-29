@@ -18,7 +18,7 @@ from utils.hand_model import create_hand_model
 
 def main():
     # substitute your filename here, which should be automatically saved in vis_info/ by validation.py
-    file_name = 'vis_info/3robots_epoch10.pt'
+    file_name = 'vis_info/model_shadowhand_epoch100.pt'
     vis_info = torch.load(os.path.join(ROOT_DIR, file_name), map_location='cpu')
 
     def on_update(idx):

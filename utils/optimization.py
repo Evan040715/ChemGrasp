@@ -7,6 +7,7 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)
 
 from utils.rotation import *
+from utils.affordance_optimization import get_affordance_descriptors, build_affordance_penalty
 
 
 def process_transform(pk_chain, transform, device=None):
@@ -92,12 +93,15 @@ def jacobian(pk_chain, q, frame_X_dict, frame_names):
     return jacobian_dict
 
 
-def create_problem(pk_chain, frame_names):
+def create_problem(pk_chain, frame_names, object_name=None, affordance_weight=0.0):
     """
     Only use all frame positions (ignore rotation) to optimize joint values.
+    Optionally add affordance penalty so link positions avoid no-grasp zones.
 
     :param pk_chain: get from pk.build_chain_from_urdf()
     :param frame_names: list of frame names to optimize
+    :param object_name: e.g. 'Chem+Round-bottom_Flask'; if None or no descriptors, no affordance term
+    :param affordance_weight: weight for affordance penalty (0 = disabled)
     :return: CvxpyLayer()
     """
     n_joint = len(pk_chain.get_joint_parameter_names())
@@ -119,6 +123,15 @@ def create_problem(pk_chain, frame_names):
 
         predict_frame_xyz = frame_xyz[link_name] + delta_frame_xyz
         objective_expr += cp.norm2(predict_frame_xyz - target_frame_xyz[link_name])
+
+        # Affordance penalty: avoid no-grasp zones (object frame)
+        if object_name and affordance_weight > 0:
+            descriptors = get_affordance_descriptors(object_name)
+            for desc in descriptors:
+                objective_expr += affordance_weight * build_affordance_penalty(
+                    predict_frame_xyz, desc
+                )
+
     objective = cp.Minimize(objective_expr)
 
     lower_joint_limits, upper_joint_limits = pk_chain.get_joint_limits()

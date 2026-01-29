@@ -34,7 +34,8 @@ def main(cfg):
             print(f"************************ Validating epoch {validate_epoch} ************************", file=f)
 
         network = create_network(cfg.model, mode='validate').to(device)
-        network.load_state_dict(torch.load(f"output/{cfg.name}/state_dict/epoch_{validate_epoch}.pth", map_location=device))
+        # network.load_state_dict(torch.load(f"output/{cfg.name}/state_dict/epoch_{validate_epoch}.pth", map_location=device))
+        network.load_state_dict(torch.load(f"ckpt/model/{cfg.name}.pth", map_location=device))
         network.eval()
 
         dataloader = create_dataloader(cfg.dataset, is_train=False)
@@ -101,7 +102,13 @@ def main(cfg):
                 transform, _ = compute_link_pose(hand.links_pc, mlat_pc, is_train=False)
                 optim_transform = process_transform(hand.pk_chain, transform)
 
-                layer = create_problem(hand.pk_chain, optim_transform.keys())
+                # add affordance penalty
+                layer = create_problem(
+                    hand.pk_chain,
+                    optim_transform.keys(),
+                    object_name=object_name,
+                    affordance_weight=getattr(cfg, 'affordance_weight', 0.0),
+                )
                 start_time = time.time()
                 predict_q = optimization(hand.pk_chain, layer, initial_q, optim_transform)
                 end_time = time.time()

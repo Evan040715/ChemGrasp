@@ -85,7 +85,7 @@ def validate_isaac(robot_name, object_name, q_batch, gpu: int = 0):
         '--batch_size', str(batch_size),
         '--q_file', q_file_path,
         '--gpu', str(gpu),
-        # '--use_gui'
+        '--use_gui'
     ]
     ret = subprocess.run(args, capture_output=True, text=True)
     try:

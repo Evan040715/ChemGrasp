@@ -2,7 +2,7 @@ model:
   emb_dim: 512
   latent_dim: 64
 
-  pretrain: pretrain_3robots.pth
+  pretrain: pretrain_shadowhand.pth
 
   center_pc: True
   block_computing: True

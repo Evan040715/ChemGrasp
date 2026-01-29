@@ -22,7 +22,8 @@ from validation.validate_utils import validate_isaac
 gpu = 0
 device = torch.device(f'cuda:{gpu}')
 ckpt_name = 'model_3robots'  # 'model_3robots_partial', 'model_allegro', 'model_barrett', 'model_shadowhand'
-batch_size = 10
+batch_size = 20
+
 
 
 def main():
@@ -41,7 +42,9 @@ def main():
     dataloader = create_dataloader(
         SimpleNamespace(**{
             'batch_size': batch_size,
-            'robot_names': ['barrett', 'allegro', 'shadowhand'],
+            # 'robot_names': ['barrett', 'allegro', 'shadowhand'],
+            'robot_names': ['allegro'],
+            # 'robot_names': ['shadowhand'],
             'debug_object_names': None,
             'object_pc_type': 'random' if ckpt_name != 'model_3robots_partial' else 'partial',
             'num_workers': 16

@@ -1,6 +1,5 @@
 robot_names:
-  - 'barrett'
-  - 'allegro'
+  # - 'allegro'
   - 'shadowhand'
 
 batch_size: 32

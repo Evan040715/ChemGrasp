@@ -12,7 +12,7 @@ import viser
 from utils.hand_model import create_hand_model
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--robot_name', type=str, default='shadowhand')
+parser.add_argument('--robot_name', type=str, default='allegro')
 args = parser.parse_args()
 robot_name = args.robot_name
 

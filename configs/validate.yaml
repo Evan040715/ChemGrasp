@@ -8,19 +8,26 @@ model:  # override model.yaml
         pretrain: null
 
 dataset:  # override cmap_dataset.yaml
-    batch_size: 100  # total grasps of (robot, object) combination
+    batch_size: 60  # total grasps of (robot, object) combination
+    debug_object_names:  
+        - 'Chem+beaker_250ml'
+        - 'Chem+conical_beaker_250ml'
+        - 'Chem+Measuring_Cylinder'
+        - 'Chem+Round-bottom_Flask'
 
-split_batch_size: 25  # limited by GPU memory
+
+split_batch_size: 15  # limited by GPU memory
+affordance_weight: 1000.0  # weight for no-grasp zone penalty in IK (0 = disabled)
 gpu: 0
-name: '3robots'
+name: 'model_shadowhand'
 validate_epochs:
-    - 10
-    - 20
-    - 30
-    - 40
+    # - 10
+    # - 20
+    # - 30
+    # - 40
 #    - 50
 #    - 60
 #    - 70
 #    - 80
 #    - 90
-#    - 100
+   - 100
