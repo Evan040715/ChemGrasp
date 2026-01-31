@@ -101,3 +101,51 @@ def validate_isaac(robot_name, object_name, q_batch, gpu: int = 0):
         cprint(ret.stderr.strip(), 'red')
         exit()
     return success, q_isaac
+
+
+def validate_isaac_tabletop(robot_name, object_name, q_batch, gpu: int = 0, table_height: float = 0.75, object_center_to_bottom_z: float = 0.03, table_size: float = 0.75):
+    """
+    Tabletop Isaac validation: object on table, gravity on, ground plane.
+    Subprocess call to isaac_main_tabletop.py to avoid Isaac Gym GPU memory leak.
+
+    :param robot_name: str
+    :param object_name: str
+    :param q_batch: torch.Tensor, joint values to validate
+    :param gpu: int
+    :param table_height: float, table surface z (m)
+    :param object_center_to_bottom_z: float, height from object center to bottom (m), so object sits on table
+    :param table_size: float, table top size in m (e.g. 0.75 = 0.75m x 0.75m)
+    :return: success: (batch_size,) bool, q_isaac: tensor
+    """
+    os.makedirs(os.path.join(ROOT_DIR, 'tmp'), exist_ok=True)
+    q_file_path = str(os.path.join(ROOT_DIR, f'tmp/q_list_validate_tabletop_{gpu}.pt'))
+    torch.save(q_batch, q_file_path)
+    batch_size = q_batch.shape[0]
+    args = [
+        'python',
+        os.path.join(ROOT_DIR, 'validation/isaac_main_tabletop.py'),
+        '--mode', 'validation',
+        '--robot_name', robot_name,
+        '--object_name', object_name,
+        '--batch_size', str(batch_size),
+        '--q_file', q_file_path,
+        '--gpu', str(gpu),
+        '--table_height', str(table_height),
+        '--object_center_to_bottom_z', str(object_center_to_bottom_z),
+        '--table_size', str(table_size),
+        '--use_gui',
+    ]
+    ret = subprocess.run(args, capture_output=True, text=True)
+    try:
+        ret_file_path = os.path.join(ROOT_DIR, f'tmp/isaac_main_tabletop_ret_{gpu}.pt')
+        save_data = torch.load(ret_file_path)
+        success = save_data['success']
+        q_isaac = save_data['q_isaac']
+        os.remove(q_file_path)
+        os.remove(ret_file_path)
+    except FileNotFoundError as e:
+        cprint(f"Caught FileNotFoundError: {e}", 'yellow')
+        cprint(ret.stdout.strip(), 'blue')
+        cprint(ret.stderr.strip(), 'red')
+        exit()
+    return success, q_isaac

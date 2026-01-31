@@ -8,7 +8,7 @@ model:  # override model.yaml
         pretrain: null
 
 dataset:  # override cmap_dataset.yaml
-    batch_size: 60  # total grasps of (robot, object) combination
+    batch_size: 4  # total grasps of (robot, object) combination
     debug_object_names:  
         - 'Chem+beaker_250ml'
         - 'Chem+conical_beaker_250ml'
@@ -18,6 +18,17 @@ dataset:  # override cmap_dataset.yaml
 
 split_batch_size: 15  # limited by GPU memory
 affordance_weight: 1000.0  # weight for no-grasp zone penalty in IK (0 = disabled)
+# Isaac validation: 'floating' = original (no gravity, object in air); 'tabletop' = object on table, gravity on
+validation_mode: 'tabletop'
+table_height: 0.5  # table surface z (m), used when validation_mode == 'tabletop'
+table_size: 0.75  # table 0.75m x 0.75m x 0.75m (length x width x height)
+# Center-to-bottom z (m): height from object center to bottom, so object sits exactly on table. Per-object; default for others.
+tabletop_center_to_bottom_z:
+  'Chem+beaker_250ml': 0.0475      # 47.5 mm
+  'Chem+conical_beaker_250ml': 0.04   # 40 mm
+  'Chem+Round-bottom_Flask': 0.055    # 55 mm
+  'Chem+Measuring_Cylinder': 0.15     # 150 mm
+tabletop_center_to_bottom_z_default: 0.03  # fallback for objects not in the map above (m)
 gpu: 0
 name: 'model_shadowhand'
 validate_epochs:
@@ -29,5 +40,5 @@ validate_epochs:
 #    - 60
 #    - 70
 #    - 80
-#    - 90
-   - 100
+   - 90
+#    - 100
